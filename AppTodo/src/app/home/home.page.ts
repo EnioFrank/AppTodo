@@ -53,5 +53,15 @@ export class HomePage {
     }
     const tarefa = { nome:novaTarefa, realizada: false };
 this.tarefas.push(tarefa);
+this.salvaLocalStorage();
   }
+  salvaLocalStorage(){
+    localStorage.setItem('tarefaUsuario', JSON.stringify(this.tarefas));
+    let tarefaSalva = localStorage.getItem('tarefaUsuario');
+
+if (tarefaSalva != null) {
+this.tarefas = JSON.parse(tarefaSalva);
+}
+    }
+    
 }
