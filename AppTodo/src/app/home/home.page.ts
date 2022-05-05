@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -8,7 +8,8 @@ import { AlertController } from '@ionic/angular';
 })
 export class HomePage {
 
-  constructor(private alertCrtl: AlertController) {}
+  tarefas: any[] = [];
+  constructor(private alertCrtl: AlertController, private toastCtrl: ToastController) {}
   async showAdd() {
     const alert = await this.alertCrtl.create({
     cssClass: 'my-custom-class',
@@ -31,14 +32,26 @@ export class HomePage {
     },
     {
     text: 'Adicionar',
-    handler: () => {
-    console.log('Adicionando com sucesso!');
+    handler: (form) => {
+      this.adicionaTarefa(form.tarefa1);
     },
   },
   ],
   });
-  
   await alert.present();
   }
+  async adicionaTarefa(novaTarefa: string){
+    if (novaTarefa.trim().length < 1) {
+    const toast = await this.toastCtrl.create({
+    message: 'Por favor, digite a tarefa!',
+    duration: 2000,
+    position: 'top',
+    });
+    
+    toast.present();
+    return;
+    }
+    const tarefa = { nome:novaTarefa, realizada: false };
+this.tarefas.push(tarefa);
   }
-
+}
