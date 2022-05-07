@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlertController, ToastController } from '@ionic/angular';
+import { ActionSheetController, AlertController, ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -9,7 +9,36 @@ import { AlertController, ToastController } from '@ionic/angular';
 export class HomePage {
 
   tarefas: any[] = [];
-  constructor(private alertCrtl: AlertController, private toastCtrl: ToastController) {}
+  constructor(private alertCrtl: AlertController, private toastCtrl: ToastController, private actionSheetCrtl: ActionSheetController) {}
+  
+  async realizaAcoes(tarefa: any) {
+    const actionSheet = await this.actionSheetCrtl.create({
+      header: 'Qual ação realizar?',
+      buttons: [{
+        text: tarefa.realizada ? 'Desmarcar' : 'Marcar',
+        icon: tarefa.realizada ? 'checkmark-circle' : 'radio-button-off-outline',
+        handler: () => {
+          tarefa.realizada = !tarefa.realizada;
+          this.salvaLocalStorage();
+        }
+      }, {
+        text: 'Cancelar',
+        icon: 'close',
+        role: 'cancel',
+        handler: () => {
+          console.log('Cancel clicked');
+        }
+      }]
+    });
+    await actionSheet.present();
+
+    const { role, data } = await actionSheet.onDidDismiss();
+  }
+  excluirTarefa(tarefa: any) {
+    this.tarefas = this.tarefas.filter(arrayTarefa => tarefa != arrayTarefa);
+
+    this.salvaLocalStorage();
+  }
   async showAdd() {
     const alert = await this.alertCrtl.create({
     cssClass: 'my-custom-class',
@@ -55,6 +84,7 @@ export class HomePage {
 this.tarefas.push(tarefa);
 this.salvaLocalStorage();
   }
+
   salvaLocalStorage(){
     localStorage.setItem('tarefaUsuario', JSON.stringify(this.tarefas));
     let tarefaSalva = localStorage.getItem('tarefaUsuario');
@@ -62,6 +92,7 @@ this.salvaLocalStorage();
 if (tarefaSalva != null) {
 this.tarefas = JSON.parse(tarefaSalva);
 }
+
     }
     
 }
